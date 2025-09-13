@@ -142,8 +142,9 @@ class AddBookToListView(LoginRequiredMixin, View):
 class RemoveBookFromListView(LoginRequiredMixin, View):
     def post(self, request, userbook_id, *args, **kwargs):
         userbook = get_object_or_404(UserBook, id=userbook_id, user=request.user)
+        title = userbook.book.title
         userbook.delete()
-        messages.success(request, f'Livro {userbook.book.title} removido de sua lista')
+        messages.success(request, f'Livro "{title}" removido de sua lista')
         return redirect('profile')
     
 
