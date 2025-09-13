@@ -20,9 +20,8 @@
     </p>
   </div>
 
-  {% if user.is_authenticated %}
   <div class="row text-center">
-    <div class="col-md-12 mb-3">
+    <div class="col-md-6 mb-3">
       <div class="card h-100 shadow-sm">
         <div class="card-body">
           <h4 class="card-title">Pesquise Livros</h4>
@@ -36,47 +35,44 @@
         </div>
       </div>
     </div>
+
+    {% if not user.is_authenticated %}
+    <div class="col-md-6 mb-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">Entre no Bookly</h4>
+          <p class="card-text">
+            Faça login para criar sua lista pessoal de livros e acompanhar seu
+            progresso.
+          </p>
+          <a href="{% url 'login' %}" class="btn btn-success btn-block"
+            >Login / Cadastro</a
+          >
+        </div>
+      </div>
     </div>
     {% else %}
-    <div class="row text-center">
-      <div class="col-md-6 mb-3">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h4 class="card-title">Pesquise Livros</h4>
-            <p class="card-text">
-              Encontre livros através da nossa integração com a API do Google
-              Books.
-            </p>
-            <a href="{% url 'search' %}" class="btn btn-primary btn-block"
-              >Buscar Livro</a
-            >
-          </div>
+    <div class="col-md-6 mb-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">Ver perfil</h4>
+          <p class="card-text">
+            Veja e edite a sua lista de livros e suas informações pessoais
+          </p>
+          <a href="{% url 'login' %}" class="btn btn-success btn-block"
+            >Vamos lá</a
+          >
         </div>
       </div>
-
-      <div class="col-md-6 mb-3">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h4 class="card-title">Entre no Bookly</h4>
-            <p class="card-text">
-              Faça login para criar sua lista pessoal de livros e acompanhar seu
-              progresso.
-            </p>
-            <a href="{% url 'login' %}" class="btn btn-success btn-block"
-              >Login / Cadastro</a
-            >
-          </div>
-        </div>
-      </div>
-      {% endif %}
     </div>
-
-    <div class="mt-5 text-center">
-      <p class="text-muted">
-        Bookly é um projeto feito para amantes de leitura. Organize seus livros
-        favoritos, acompanhe sua evolução e descubra novas obras interessantes!
-      </p>
-    </div>
+    {% endif %}
   </div>
-  {% endblock %}
+
+  <div class="mt-5 text-center">
+    <p class="text-muted">
+      Bookly é um projeto feito para amantes de leitura. Organize seus livros
+      favoritos, acompanhe sua evolução e descubra novas obras interessantes!
+    </p>
+  </div>
 </div>
+{% endblock %}
