@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = '/'
 
 # Application definition
 
@@ -40,6 +43,8 @@ INSTALLED_APPS = [
     'core',
     'bootstrap4',
 ]
+
+AUTH_USER_MODEL = 'core.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

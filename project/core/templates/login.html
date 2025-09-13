@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+<!-- Título -->
+{% block title %}Login - Bookly{% endblock %}
+
+<!-- Conteúdo -->
+{% block content %}
+<div class="card-body">
+  <h3 class="text-center mb-4">Login</h3>
+
+  <form method="post" class="mx-auto" style="max-width: 400px">
+    {% csrf_token %} {% if form.errors %}
+    <div class="alert alert-danger">Usuário ou senha incorretos.</div>
+    {% endif %}
+
+    <div class="form-group mb-3">
+      <label for="id_username">Usuário</label>
+      <input
+        type="text"
+        name="username"
+        class="form-control"
+        id="id_username"
+        required
+      />
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="id_password">Senha</label>
+      <input
+        type="password"
+        name="password"
+        class="form-control"
+        id="id_password"
+        required
+      />
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">Login</button>
+  </form>
+
+  <p class="text-center mt-3">
+    Não tem conta? <a href="{% url 'signup' %}">Cadastre-se aqui</a>
+  </p>
+</div>
+{% endblock %}

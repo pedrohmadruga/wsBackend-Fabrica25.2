@@ -1,5 +1,9 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, CreateView
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
 import requests, math
+from django.urls import reverse_lazy
+from .models import CustomUser
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -55,3 +59,21 @@ class BookSearchView(TemplateView):
         context["page"] = page
         context["total_pages"] = total_pages
         return context
+    
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+    redirect_authenticated_user = True
+    next_page = reverse_lazy('home')
+
+class SignUpView(CreateView):
+    model = CustomUser
+    template_name = 'signup.html'
+    fields = ["username", "email", "password"]
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.set_password(form.cleaned_data["password"])
+        user.save()
+        login(self.request, user)
+        return super().form_valid(form)

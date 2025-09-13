@@ -7,7 +7,12 @@
 {% block content %}
 <div class="card-body">
   <div class="text-center mb-5">
+    {% if user.is_authenticated %}
+    <h1 class="display-4">Bem-vindo ao Bookly, {{ user.username }}!</h1>
+    {% else %}
     <h1 class="display-4">Bem-vindo ao Bookly!</h1>
+
+    {% endif %}
     <p class="lead">
       Aqui você pode pesquisar diversos livros e gerenciá-los de acordo com suas
       preferências. Adicione livros à sua lista pessoal e acompanhe seu
@@ -39,7 +44,9 @@
             Faça login para criar sua lista pessoal de livros e acompanhar seu
             progresso.
           </p>
-          <a href="" class="btn btn-success btn-block">Login / Cadastro</a>
+          <a href="{% url 'login' %}" class="btn btn-success btn-block"
+            >Login / Cadastro</a
+          >
         </div>
       </div>
     </div>
