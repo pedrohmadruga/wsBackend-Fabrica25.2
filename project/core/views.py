@@ -13,6 +13,8 @@ import requests, math
 class HomeView(TemplateView):
     template_name = 'home.html'
 
+
+# Busca livros na API do google
 class BookSearchView(TemplateView):
     template_name = "search.html"
     RESULTS_PER_PAGE = 21
@@ -21,16 +23,18 @@ class BookSearchView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        query = self.request.GET.get("q", "")
-        page_str = self.request.GET.get("page", "1")  # pega a página como string
+        query = self.request.GET.get("q", "") # string de pesquisa enviada pelo usuário
+        page_str = self.request.GET.get("page", "1")  
+
+        # pega a página como string
         try:
             page = int(page_str)
             if page < 1:
                 page = 1
         except ValueError:
             page = 1
-        total_items = 0
-        results = []
+        total_items = 0 # contador de livros na página para paginação
+        results = [] # lista de dicionários contendo as informações dos livros
 
         if query:
             start_index = (page - 1) * self.RESULTS_PER_PAGE # pula os livros já exibidos para não haver repetição na página seguinte
@@ -41,7 +45,7 @@ class BookSearchView(TemplateView):
                 "startIndex": start_index,
                 "printType": "books" # Mostra apenas livros, excluindo revistas, artigos, jornais, etc
             }
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params) # faz a chamada para a API do Google Books
             if response.status_code == 200:
                 data = response.json()
                 total_items = data.get("totalItems", 0)
@@ -66,30 +70,37 @@ class BookSearchView(TemplateView):
         context["total_pages"] = total_pages
         return context
     
+
+# Página de login
 class CustomLoginView(LoginView):
     template_name = 'login.html'
     redirect_authenticated_user = True
     next_page = reverse_lazy('home')
 
+
+# Página para cadastrar novo usuário
 class SignUpView(CreateView):
     model = CustomUser
     template_name = 'signup.html'
     fields = ["username", "email", "password"]
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("home") # redireciona para home após o cadastro
 
     def form_valid(self, form):
         user = form.save(commit=False)
-        user.set_password(form.cleaned_data["password"])
+        user.set_password(form.cleaned_data["password"]) # salva a senha como hash
         user.save()
-        login(self.request, user)
+        login(self.request, user) # loga automaticamente após o cadastro
         return super().form_valid(form)
     
-class ProfileView(LoginRequiredMixin, ListView):
+
+# Exibe a lista de livros na lista do usuário
+class ProfileView(LoginRequiredMixin, ListView): #LoginRequiredMixin: apenas usuários logados podem acessar
     model = UserBook
     template_name = 'profile.html'
     context_object_name = 'books'
-    paginate_by = 10
+    paginate_by = 12
 
+    # retorna os livros com filtro de status, caso selecionado
     def get_queryset(self):
         queryset = UserBook.objects.filter(user=self.request.user).order_by("-added_at")
         status = self.request.GET.get("status")
@@ -102,7 +113,10 @@ class ProfileView(LoginRequiredMixin, ListView):
         context["status_selected"] = self.request.GET.get("status", "")
         return context
 
+
+# Adiciona livro à lista do usuário
 class AddBookToListView(LoginRequiredMixin, View):
+    # Recebe dados do formulário (preenchido automaticamente com os dados do livro)
     def post(self, request, *args, **kwargs):
         # Dados do livro vindos do formulário
         google_book_id = request.POST.get("google_book_id")
@@ -112,7 +126,7 @@ class AddBookToListView(LoginRequiredMixin, View):
         published_date = request.POST.get("published_date", "")
         thumbnail = request.POST.get("thumbnail", "")
 
-        # cria ou pega o objeto Book
+        # cria ou pega o objeto Book no banco de dados
         book_obj, created = Book.objects.get_or_create(
             google_book_id=google_book_id,
             defaults={
@@ -124,7 +138,7 @@ class AddBookToListView(LoginRequiredMixin, View):
             }
         )
 
-        # cria UserBook
+        # cria ou pega o objeto UserBook no banco de dados
         UserBook.objects.get_or_create(
             user=request.user,
             book=book_obj,
@@ -138,8 +152,9 @@ class AddBookToListView(LoginRequiredMixin, View):
         return redirect('search')
 
     
-    
+# Remove livro da lista do usuário
 class RemoveBookFromListView(LoginRequiredMixin, View):
+    # Recebe o ID do livro por formulário preenchido automaticamente
     def post(self, request, userbook_id, *args, **kwargs):
         userbook = get_object_or_404(UserBook, id=userbook_id, user=request.user)
         title = userbook.book.title
@@ -148,6 +163,7 @@ class RemoveBookFromListView(LoginRequiredMixin, View):
         return redirect('profile')
     
 
+# Atualiza o status de um livro na lista do usuário (lendo, planejo ler...)
 class UpdateBookStatusView(LoginRequiredMixin, View):
     def post(self, request, userbook_id, *args, **kwargs):
         userbook = get_object_or_404(UserBook, id=userbook_id, user=request.user)
@@ -156,19 +172,20 @@ class UpdateBookStatusView(LoginRequiredMixin, View):
         if new_status in dict(UserBook.STATUS_CHOICES):
             userbook.status = new_status
             userbook.save()
-        new_status_display = userbook.get_status_display()
+        new_status_display = userbook.get_status_display() # get_status_display pega o valor "amigável" do status ("Planejo ler" ao invés de "plan")
         messages.success(request, f'Alterado status de "{title}" para "{new_status_display}"')
         return redirect("profile")
     
 
+# Exibe informações completas do livro com base nos dados da API
 class BookDetailView(TemplateView):
     template_name = 'book_detail.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        google_book_id = kwargs.get("google_book_id")
+        google_book_id = kwargs.get("google_book_id") # Pega o id do livro pela URL
         url = f"https://www.googleapis.com/books/v1/volumes/{google_book_id}"
-        response = requests.get(url)
+        response = requests.get(url) # Pega os dados completos na API do google
 
         if response.status_code != 200:
             raise Http404("Livro não encontrado")

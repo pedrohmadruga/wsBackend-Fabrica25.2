@@ -1,3 +1,4 @@
+<!-- Herda o layout e estrutura do base.html-->
 {% extends "base.html" %}
 
 <!-- Título -->
@@ -17,6 +18,7 @@
     <form method="get" class="ml-2">
       <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
         <option value="">Todos os status</option>
+        <!-- O status_selected mantém a opção selecionada após o filtro. Vem do context da view -->
         <option value="plan" {% if status_selected == "plan" %}selected{% endif %}>Planejo ler</option>
         <option value="reading" {% if status_selected == "reading" %}selected{% endif %}>Lendo</option>
         <option value="completed" {% if status_selected == "completed" %}selected{% endif %}>Completo</option>
@@ -49,14 +51,18 @@
             <strong>Publicado:</strong> {{ userbook.book.published_date }}
           </p>
           <p class="card-text">
+            <!-- get_status_display retorna o texto legível do models.UserBook.STATUS_CHOICES -->
             <strong>Status:</strong> {{ userbook.get_status_display }}
           </p>
           <!-- Form editar status -->
           <form method="post" action="{% url 'update_status' userbook.id %}" class="mb-2">
+            <!-- Adiciona o token csrf obrigatório do django para prevenir ataques -->
             {% csrf_token %}
             <div class="input-group">
               <select name="status" class="form-control form-control-sm">
+                <!-- Itera cada tupla de status, criando uma opção no select para cada status existente -->
                 {% for key, value in userbook.STATUS_CHOICES %}
+                  <!-- Compara o valor atual do usuário com o key do loop, só adicionando se o status for igual-->
                   <option value="{{ key }}" {% if userbook.status == key %}selected{% endif %}>{{ value }}</option>
                 {% endfor %}
               </select>

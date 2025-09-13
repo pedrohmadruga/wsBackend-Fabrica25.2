@@ -1,3 +1,4 @@
+<!-- Herda o layout e estrutura do base.html-->
 {% extends "base.html" %}
 
 <!-- Título -->
@@ -36,6 +37,7 @@
       </div>
     </div>
 
+    <!-- Muda o que é exibido se o usuário está logado ou não -->
     {% if not user.is_authenticated %}
     <div class="col-md-6 mb-3">
       <div class="card h-100 shadow-sm">

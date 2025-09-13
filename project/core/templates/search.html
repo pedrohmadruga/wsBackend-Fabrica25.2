@@ -1,3 +1,4 @@
+<!-- Herda o layout e estrutura do base.html-->
 {% extends "base.html" %}
 
 <!-- Título -->
@@ -43,6 +44,7 @@
       <button type="submit" class="btn btn-primary">Buscar</button>
     </form>
 
+    <!-- Exibe apenas se tiver algum resultado -->
     {% if results %}
     <div class="row">
       {% for book in results %}
@@ -66,6 +68,7 @@
             <p class="card-text">
               <strong>Publicado:</strong> {{ book.published_date }}
             </p>
+            <!-- Só mostra botão de adicionar à lista se o usuário está logado -->
             {% if user.is_authenticated %}
             <form method="post" action="{% url 'add_book' %}">
               {% csrf_token %}
@@ -112,6 +115,7 @@
       </div>
       {% endfor %}
     </div>
+    <!-- Se pesquisou e não encontrou nada, exibe uma mensagem -->
     {% elif query %}
     <p class="text-center mt-4">
       Nenhum resultado encontrado para "{{ query }}"
@@ -119,14 +123,16 @@
     {% endif %}
 
     <!-- Lógica de paginação-->
-    {% if total_pages > 1 %}
-    <nav aria-label="Page navigation">
+    {% if total_pages > 1 %} <!-- Só exibe a barra de paginação se houver mais de uma página -->
+    <nav aria-label="Page navigation"> <!-- HTML do bootstrap para estilizar a paginação-->
       <ul class="pagination justify-content-center mt-4">
+        <!-- Botão "anterior" -->
         {% if page > 1 %}
         <li class="page-item">
+          <!-- Se não for a primeira página, decrementa 1 da página atual para gerar o link da página anterior -->
           <a
             class="page-link"
-            href="?q={{ query }}&page={{ page|add:-1 }}"
+            href="?q={{ query }}&page={{ page|add:-1 }}" 
             aria-label="Previous"
           >
             &laquo;
@@ -134,8 +140,8 @@
         </li>
         {% endif %}
 
-        <!--  -->
-        {% for p in pages %} {% if p == page %}
+        <!-- Lista de número de páginas, gerada na view -->
+        {% for p in pages %} {% if p == page %} <!-- Se for a página atual, coloca class active-->
         <li class="page-item active">
           <span class="page-link">{{ p }}</span>
         </li>
@@ -145,7 +151,7 @@
         </li>
         {% endif %} {% endfor %}
 
-        <!---->
+        <!-- Se não for a última página, acrescenta 1 à página atual para o link da próxima página -->
         {% if page < total_pages %}
         <li class="page-item">
           <a

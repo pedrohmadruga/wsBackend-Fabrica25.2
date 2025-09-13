@@ -1,3 +1,4 @@
+<!-- Herda o layout e estrutura do base.html-->
 {% extends "base.html" %}
 
 <!-- Título -->
@@ -7,6 +8,7 @@
 {% block content %}
 <div class="card mb-4">
   {% if thumbnail %}
+  <!-- Só mostra a imagem se ela tiver thumbnail-->
   <img src="{{ thumbnail }}" class="card-img-top" alt="{{ title }}" />
   {% endif %}
   <div class="card-body">
@@ -22,7 +24,9 @@
     <p><strong>Língua:</strong> {{ language }}</p>
     <p><strong>Descrição:</strong></p>
     <p>{{ description|safe }}</p>
+    <!-- Permite que o HTML seja carregado ao invés de aparecer como texto puro-->
     {% if preview_link %}
+    <!-- Só mostra o botão se tiver link -->
     <a href="{{ preview_link }}" target="_blank" class="btn btn-primary"
       >Visualizar no Google Books</a
     >

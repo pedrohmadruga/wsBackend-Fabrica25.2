@@ -1,6 +1,4 @@
-{% load static %} {% load bootstrap4 %}
-<!DOCTYPE html>
-<html lang="en">
+{% load bootstrap4 %} <!-- Carrega o boostrap4 pelo django -->
   <head>
     <link
       rel="stylesheet"
@@ -43,6 +41,7 @@
   <body style="background-color: #faebeb">
     <div class="card">
       <h2 class="card-header">BOOKLY</h2>
+      <!-- Mostra as mensagens enviadas pelo django com messages.success -->
       {% if messages %}
       <div class="container mt-3">
         {% for message in messages %}
@@ -62,7 +61,10 @@
         </div>
         {% endfor %}
       </div>
-      {% endif %} {% block content %} {% endblock %}
+      {% endif %} 
+
+      <!-- Conteúdo específico de cada página -->
+      {% block content %} {% endblock %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
