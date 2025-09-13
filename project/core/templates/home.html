@@ -6,10 +6,50 @@
 <!-- Conteúdo da página -->
 {% block content %}
 <div class="card-body">
-  <h3 style="text-align: center; font-size: 50px">Introdução</h3>
-  <p>
-    Bem-vindo ao Bookly! Aqui você pode pesquisar diversos livros e gerenciá-los
-    de acordo com as suas preferências!
-  </p>
+  <div class="text-center mb-5">
+    <h1 class="display-4">Bem-vindo ao Bookly!</h1>
+    <p class="lead">
+      Aqui você pode pesquisar diversos livros e gerenciá-los de acordo com suas
+      preferências. Adicione livros à sua lista pessoal e acompanhe seu
+      progresso de leitura.
+    </p>
+  </div>
+
+  <div class="row text-center">
+    <div class="col-md-6 mb-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">Pesquise Livros</h4>
+          <p class="card-text">
+            Encontre livros através da nossa integração com a API do Google
+            Books.
+          </p>
+          <a href="{% url 'search' %}" class="btn btn-primary btn-block"
+            >Buscar Livro</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">Entre no Bookly</h4>
+          <p class="card-text">
+            Faça login para criar sua lista pessoal de livros e acompanhar seu
+            progresso.
+          </p>
+          <a href="" class="btn btn-success btn-block">Login / Cadastro</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5 text-center">
+    <p class="text-muted">
+      Bookly é um projeto feito para amantes de leitura. Organize seus livros
+      favoritos, acompanhe sua evolução e descubra novas obras interessantes!
+    </p>
+  </div>
 </div>
 {% endblock %}
