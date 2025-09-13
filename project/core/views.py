@@ -151,11 +151,14 @@ class RemoveBookFromListView(LoginRequiredMixin, View):
 class UpdateBookStatusView(LoginRequiredMixin, View):
     def post(self, request, userbook_id, *args, **kwargs):
         userbook = get_object_or_404(UserBook, id=userbook_id, user=request.user)
+        title = userbook.book.title
         new_status = request.POST.get("status")
         if new_status in dict(UserBook.STATUS_CHOICES):
             userbook.status = new_status
             userbook.save()
-        return redirect(request.META.get("HTTP_REFERER", "profile"))
+        new_status_display = userbook.get_status_display()
+        messages.success(request, f'Alterado status de "{title}" para "{new_status_display}"')
+        return redirect("profile")
     
 
 class BookDetailView(TemplateView):

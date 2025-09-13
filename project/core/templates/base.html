@@ -43,7 +43,7 @@
   <body style="background-color: #faebeb">
     <div class="card">
       <h2 class="card-header">BOOKLY</h2>
-      {% block content %} {% endblock %} {% if messages %}
+      {% if messages %}
       <div class="container mt-3">
         {% for message in messages %}
         <div
@@ -62,7 +62,7 @@
         </div>
         {% endfor %}
       </div>
-      {% endif %}
+      {% endif %} {% block content %} {% endblock %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
