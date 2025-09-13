@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+<!-- Título -->
+{% block title %}Visualização de livro{% endblock%}
+
+<!-- Conteúdo -->
+{% block content %}
+<div class="card mb-4">
+  {% if thumbnail %}
+  <img src="{{ thumbnail }}" class="card-img-top" alt="{{ title }}" />
+  {% endif %}
+  <div class="card-body">
+    <h3 class="card-title">{{ title }}</h3>
+    {% if subtitle %}
+    <h5 class="card-subtitle mb-2 text-muted">{{ subtitle }}</h5>
+    {% endif %}
+    <p><strong>Autores:</strong> {{ authors }}</p>
+    <p><strong>Editora:</strong> {{ publisher }}</p>
+    <p><strong>Publicado:</strong> {{ published_date }}</p>
+    <p><strong>Páginas:</strong> {{ page_count }}</p>
+    <p><strong>Categoria:</strong> {{ categories }}</p>
+    <p><strong>Língua:</strong> {{ language }}</p>
+    <p><strong>Descrição:</strong></p>
+    <p>{{ description|safe }}</p>
+    {% if preview_link %}
+    <a href="{{ preview_link }}" target="_blank" class="btn btn-primary"
+      >Visualizar no Google Books</a
+    >
+    {% endif %}
+  </div>
+</div>
+<a href="{% url 'search' %}" class="btn btn-secondary">Voltar à busca</a>
+{% endblock %}

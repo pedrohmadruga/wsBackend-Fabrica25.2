@@ -81,6 +81,12 @@
             >Login para adicionar</a
           >
           {% endif %}
+          <a
+            href="{% url 'book_detail' google_book_id=book.google_book_id %}"
+            class="btn btn-primary btn-block mt-2"
+          >
+            Ver detalhes
+          </a>
         </div>
       </div>
     </div>

@@ -2,10 +2,12 @@ from django.views.generic import TemplateView, CreateView, ListView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
-import requests, math
 from django.urls import reverse_lazy
 from .models import CustomUser, UserBook, Book
 from django.shortcuts import redirect, get_object_or_404
+from django.http import Http404
+from django.views import View
+import requests, math
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -98,11 +100,6 @@ class ProfileView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["status_selected"] = self.request.GET.get("status", "")
         return context
-    
-from django.shortcuts import redirect
-from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from core.models import UserBook
 
 class AddBookToListView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
@@ -151,3 +148,35 @@ class UpdateBookStatusView(LoginRequiredMixin, View):
             userbook.status = new_status
             userbook.save()
         return redirect(request.META.get("HTTP_REFERER", "profile"))
+    
+
+class BookDetailView(TemplateView):
+    template_name = 'book_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        google_book_id = kwargs.get("google_book_id")
+        url = f"https://www.googleapis.com/books/v1/volumes/{google_book_id}"
+        response = requests.get(url)
+
+        if response.status_code != 200:
+            raise Http404("Livro não encontrado")
+
+        data = response.json()
+        info = data.get("volumeInfo", {})
+
+        context.update({
+            "google_book_id": google_book_id,
+            "title": info.get("title", "Sem título"),
+            "subtitle": info.get("subtitle", ""),
+            "authors": ", ".join(info.get("authors") or ["Desconhecido"]),
+            "publisher": info.get("publisher", "Desconhecido"),
+            "published_date": info.get("publishedDate", "Desconhecido"),
+            "description": info.get("description", "Sem descrição"),
+            "page_count": info.get("pageCount", "Desconhecido"),
+            "categories": ", ".join(info.get("categories") or ["Sem categoria"]),
+            "thumbnail": (info.get("imageLinks") or {}).get("thumbnail"),
+            "language": info.get("language", "Desconhecido"),
+            "preview_link": info.get("previewLink"),
+        })
+        return context

@@ -10,4 +10,5 @@ urlpatterns = [
     path('add-book/', AddBookToListView.as_view(), name='add_book'),
     path('remove-book/<int:userbook_id>/', RemoveBookFromListView.as_view(), name='remove_book'),
     path('update-status/<int:userbook_id>/', UpdateBookStatusView.as_view(), name='update_status'),
+    path('book/<slug:google_book_id>/', BookDetailView.as_view(), name='book_detail')
 ]

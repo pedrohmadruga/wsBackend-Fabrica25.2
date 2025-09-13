@@ -74,6 +74,13 @@
             Remover
             </button>
           </form>
+
+          {% if userbook.book.google_book_id %}
+          <a
+            href="{% url 'book_detail' google_book_id=userbook.book.google_book_id %}"
+            class="btn btn-primary btn-block mt-2"
+          >Ver Detalhes</a>
+          {% endif %}
         </div>
       </div>
     </div>
