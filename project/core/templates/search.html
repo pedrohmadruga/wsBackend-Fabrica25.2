@@ -6,141 +6,164 @@
 <!-- Conteúdo -->
 {% block content %}
 <div class="card-body">
-  <h3 class="text-center mb-4">Buscar Livros</h3>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary btn-sm">
+      &larr; Voltar à página inical
+    </a>
 
-  <!-- Formulário de pesquisa -->
-  <form
-    method="get"
-    action="{% url 'search' %}"
-    class="form-inline justify-content-center mb-4"
-  >
-    <input
-      type="text"
-      name="q"
-      value="{{ query }}"
-      class="form-control mr-2"
-      placeholder="Digite o nome do livro"
-      required
-    />
-    <button type="submit" class="btn btn-primary">Buscar</button>
-  </form>
+    <h3 class="mb-0 text-center flex-grow-1">Buscar livros</h3>
 
-  {% if results %}
-  <div class="row">
-    {% for book in results %}
-    <div class="col-md-4 mb-3">
-      <div class="card h-100">
-        {% if book.thumbnail %}
-        <img
-          src="{{ book.thumbnail }}"
-          class="card-img-top"
-          alt="{{ book.title }}"
-        />
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{ book.title }}</h5>
-          <p class="card-text"><strong>Autores:</strong> {{ book.authors }}</p>
-          <p class="card-text">
-            <strong>Editora:</strong> {{ book.publisher }}
-          </p>
-          <p class="card-text">
-            <strong>Publicado:</strong> {{ book.published_date }}
-          </p>
-          {% if user.is_authenticated %}
-          <form method="post" action="{% url 'add_book' %}">
-            {% csrf_token %}
-            <input
-              type="hidden"
-              name="google_book_id"
-              value="{{ book.google_book_id }}"
-            />
-            <input type="hidden" name="title" value="{{ book.title }}" />
-            <input type="hidden" name="authors" value="{{ book.authors }}" />
-            <input
-              type="hidden"
-              name="publisher"
-              value="{{ book.publisher }}"
-            />
-            <input
-              type="hidden"
-              name="published_date"
-              value="{{ book.published_date }}"
-            />
-            <input
-              type="hidden"
-              name="thumbnail"
-              value="{{ book.thumbnail }}"
-            />
-            <button type="submit" class="btn btn-success btn-block mt-2">
-              Adicionar à lista
-            </button>
-          </form>
-          {% else %}
-          <!-- Link de login -->
-          <a href="{% url 'login' %}" class="btn btn-secondary btn-block mt-2"
-            >Login para adicionar</a
-          >
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      {% if user.is_authenticated %}
+      <a href="{% url 'profile' %}" class="btn btn-secondary btn-sm">
+        Meu Perfil
+      </a>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-secondary btn-sm">
+        Fazer login
+      </a>
+      {% endif %}
+    </div>
+    </div>
+
+    <!-- Formulário de pesquisa -->
+    <form
+      method="get"
+      action="{% url 'search' %}"
+      class="form-inline justify-content-center mb-4"
+    >
+      <input
+        type="text"
+        name="q"
+        value="{{ query }}"
+        class="form-control mr-2"
+        placeholder="Digite o nome do livro"
+        required
+      />
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+
+    {% if results %}
+    <div class="row">
+      {% for book in results %}
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          {% if book.thumbnail %}
+          <img
+            src="{{ book.thumbnail }}"
+            class="card-img-top"
+            alt="{{ book.title }}"
+          />
           {% endif %}
-          <a
-            href="{% url 'book_detail' google_book_id=book.google_book_id %}"
-            class="btn btn-primary btn-block mt-2"
-          >
-            Ver detalhes
-          </a>
+          <div class="card-body">
+            <h5 class="card-title">{{ book.title }}</h5>
+            <p class="card-text">
+              <strong>Autores:</strong> {{ book.authors }}
+            </p>
+            <p class="card-text">
+              <strong>Editora:</strong> {{ book.publisher }}
+            </p>
+            <p class="card-text">
+              <strong>Publicado:</strong> {{ book.published_date }}
+            </p>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_book' %}">
+              {% csrf_token %}
+              <input
+                type="hidden"
+                name="google_book_id"
+                value="{{ book.google_book_id }}"
+              />
+              <input type="hidden" name="title" value="{{ book.title }}" />
+              <input type="hidden" name="authors" value="{{ book.authors }}" />
+              <input
+                type="hidden"
+                name="publisher"
+                value="{{ book.publisher }}"
+              />
+              <input
+                type="hidden"
+                name="published_date"
+                value="{{ book.published_date }}"
+              />
+              <input
+                type="hidden"
+                name="thumbnail"
+                value="{{ book.thumbnail }}"
+              />
+              <button type="submit" class="btn btn-success btn-block mt-2">
+                Adicionar à lista
+              </button>
+            </form>
+            {% else %}
+            <!-- Link de login -->
+            <a href="{% url 'login' %}" class="btn btn-secondary btn-block mt-2"
+              >Login para adicionar</a
+            >
+            {% endif %}
+            <a
+              href="{% url 'book_detail' google_book_id=book.google_book_id %}"
+              class="btn btn-primary btn-block mt-2"
+            >
+              Ver detalhes
+            </a>
+          </div>
         </div>
       </div>
+      {% endfor %}
     </div>
-    {% endfor %}
+    {% elif query %}
+    <p class="text-center mt-4">
+      Nenhum resultado encontrado para "{{ query }}"
+    </p>
+    {% endif %}
+
+    <!-- Lógica de paginação-->
+    {% if total_pages > 1 %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center mt-4">
+        {% if page > 1 %}
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="?q={{ query }}&page={{ page|add:-1 }}"
+            aria-label="Previous"
+          >
+            &laquo;
+          </a>
+        </li>
+        {% endif %}
+
+        <!--  -->
+        {% for p in pages %} {% if p == page %}
+        <li class="page-item active">
+          <span class="page-link">{{ p }}</span>
+        </li>
+        {% else %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ query }}&page={{ p }}">{{ p }}</a>
+        </li>
+        {% endif %} {% endfor %}
+
+        <!---->
+        {% if page < total_pages %}
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="?q={{ query }}&page={{ page|add:1 }}"
+            aria-label="Next"
+          >
+            &raquo;
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
   </div>
-  {% elif query %}
-  <p class="text-center mt-4">Nenhum resultado encontrado para "{{ query }}"</p>
-  {% endif %}
+  {% endblock %}
 
-  <!-- Lógica de paginação-->
-  {% if total_pages > 1 %}
-  <nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center mt-4">
-      {% if page > 1 %}
-      <li class="page-item">
-        <a
-          class="page-link"
-          href="?q={{ query }}&page={{ page|add:-1 }}"
-          aria-label="Previous"
-        >
-          &laquo;
-        </a>
-      </li>
-      {% endif %}
-
-      <!--  -->
-      {% for p in pages %} {% if p == page %}
-      <li class="page-item active">
-        <span class="page-link">{{ p }}</span>
-      </li>
-      {% else %}
-      <li class="page-item">
-        <a class="page-link" href="?q={{ query }}&page={{ p }}">{{ p }}</a>
-      </li>
-      {% endif %} {% endfor %}
-
-      <!---->
-      {% if page < total_pages %}
-      <li class="page-item">
-        <a
-          class="page-link"
-          href="?q={{ query }}&page={{ page|add:1 }}"
-          aria-label="Next"
-        >
-          &raquo;
-        </a>
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
-  {% endif %}
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
 </div>
-{% endblock %}
-
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>

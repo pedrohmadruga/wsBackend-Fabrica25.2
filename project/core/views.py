@@ -2,6 +2,7 @@ from django.views.generic import TemplateView, CreateView, ListView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import CustomUser, UserBook, Book
 from django.shortcuts import redirect, get_object_or_404
@@ -129,15 +130,21 @@ class AddBookToListView(LoginRequiredMixin, View):
             book=book_obj,
             defaults={"status": "plan"}
         )
+        
+        if created:
+            messages.success(request, f'Livro "{book_obj.title}" adiconado à sua lista!')
+        else:
+            messages.info(request, f'Livro "{book_obj.title}" já estava na sua lista.')
+        return redirect('search')
 
-        return redirect(request.META.get("HTTP_REFERER", "home"))
     
     
 class RemoveBookFromListView(LoginRequiredMixin, View):
     def post(self, request, userbook_id, *args, **kwargs):
         userbook = get_object_or_404(UserBook, id=userbook_id, user=request.user)
         userbook.delete()
-        return redirect(request.META.get("HTTP_REFERER", "profile"))
+        messages.success(request, f'Livro {userbook.book.title} removido de sua lista')
+        return redirect('profile')
     
 
 class UpdateBookStatusView(LoginRequiredMixin, View):
