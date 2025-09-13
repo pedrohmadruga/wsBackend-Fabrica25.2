@@ -25,8 +25,8 @@ class UserBook(models.Model):
         ('dropped', 'Abandonado'),
     ]
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='userbooks')
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='userbooks')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='userbooks', default=None)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='userbooks', default=None)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='plan')
     added_at = models.DateTimeField(auto_now_add=True)
 

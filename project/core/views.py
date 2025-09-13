@@ -1,9 +1,10 @@
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, ListView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin
 import requests, math
 from django.urls import reverse_lazy
-from .models import CustomUser
+from .models import CustomUser, UserBook, Book
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -43,11 +44,12 @@ class BookSearchView(TemplateView):
                 for item in data.get("items", []):
                     info = item.get("volumeInfo", {}) # dicionário com os dados do livro retornado pela API
                     results.append({
+                        "google_book_id": item.get("id"),
                         "title": info.get("title", "Sem título"),
                         "authors": ", ".join(info.get("authors") or ["Desconhecido"]),
                         "publisher": info.get("publisher", "Desconhecido"),
                         "published_date": info.get("publishedDate", "Desconhecido"),
-                        "thumbnail": (info.get("imageLinks") or {}).get("thumbnail"), # Tenta pegar a imagem do livro, se existir
+                        "thumbnail": (info.get("imageLinks") or {}).get("thumbnail"),
                     })
 
                 total_items = min(data.get("totalItems", 0), self.MAX_RESULTS_API)
@@ -77,3 +79,48 @@ class SignUpView(CreateView):
         user.save()
         login(self.request, user)
         return super().form_valid(form)
+    
+class ProfileView(LoginRequiredMixin, ListView):
+    model = UserBook
+    template_name = 'profile.html'
+    context_object_name = 'books'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return UserBook.objects.filter(user=self.request.user).order_by("-added_at")
+    
+from django.shortcuts import redirect
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from core.models import UserBook
+
+class AddBookToListView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        # Dados do livro vindos do formulário
+        google_book_id = request.POST.get("google_book_id")
+        title = request.POST.get("title")
+        authors = request.POST.get("authors", "")
+        publisher = request.POST.get("publisher", "")
+        published_date = request.POST.get("published_date", "")
+        thumbnail = request.POST.get("thumbnail", "")
+
+        # cria ou pega o objeto Book
+        book_obj, created = Book.objects.get_or_create(
+            google_book_id=google_book_id,
+            defaults={
+                "title": title,
+                "authors": authors,
+                "publisher": publisher,
+                "published_date": published_date,
+                "thumbnail": thumbnail,
+            }
+        )
+
+        # cria UserBook
+        UserBook.objects.get_or_create(
+            user=request.user,
+            book=book_obj,
+            defaults={"status": "plan"}
+        )
+
+        return redirect(request.META.get("HTTP_REFERER", "home"))

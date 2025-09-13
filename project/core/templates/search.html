@@ -47,10 +47,34 @@
             <strong>Publicado:</strong> {{ book.published_date }}
           </p>
           {% if user.is_authenticated %}
-          <!-- Botão que abre o modal -->
-          <button type="button" class="btn btn-success btn-block mt-2">
-            Adicionar à lista
-          </button>
+          <form method="post" action="{% url 'add_book' %}">
+            {% csrf_token %}
+            <input
+              type="hidden"
+              name="google_book_id"
+              value="{{ book.google_book_id }}"
+            />
+            <input type="hidden" name="title" value="{{ book.title }}" />
+            <input type="hidden" name="authors" value="{{ book.authors }}" />
+            <input
+              type="hidden"
+              name="publisher"
+              value="{{ book.publisher }}"
+            />
+            <input
+              type="hidden"
+              name="published_date"
+              value="{{ book.published_date }}"
+            />
+            <input
+              type="hidden"
+              name="thumbnail"
+              value="{{ book.thumbnail }}"
+            />
+            <button type="submit" class="btn btn-success btn-block mt-2">
+              Adicionar à lista
+            </button>
+          </form>
           {% else %}
           <!-- Link de login -->
           <a href="" class="btn btn-secondary btn-block mt-2"
