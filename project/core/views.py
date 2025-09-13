@@ -88,7 +88,16 @@ class ProfileView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return UserBook.objects.filter(user=self.request.user).order_by("-added_at")
+        queryset = UserBook.objects.filter(user=self.request.user).order_by("-added_at")
+        status = self.request.GET.get("status")
+        if status:
+            queryset = queryset.filter(status=status)
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["status_selected"] = self.request.GET.get("status", "")
+        return context
     
 from django.shortcuts import redirect
 from django.views import View
@@ -131,4 +140,14 @@ class RemoveBookFromListView(LoginRequiredMixin, View):
     def post(self, request, userbook_id, *args, **kwargs):
         userbook = get_object_or_404(UserBook, id=userbook_id, user=request.user)
         userbook.delete()
+        return redirect(request.META.get("HTTP_REFERER", "profile"))
+    
+
+class UpdateBookStatusView(LoginRequiredMixin, View):
+    def post(self, request, userbook_id, *args, **kwargs):
+        userbook = get_object_or_404(UserBook, id=userbook_id, user=request.user)
+        new_status = request.POST.get("status")
+        if new_status in dict(UserBook.STATUS_CHOICES):
+            userbook.status = new_status
+            userbook.save()
         return redirect(request.META.get("HTTP_REFERER", "profile"))

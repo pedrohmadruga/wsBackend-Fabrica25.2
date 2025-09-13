@@ -6,7 +6,23 @@
 <!-- Conteúdo -->
 {% block content %}
 <div class="card-body">
-  <h3 class="text-center mb-4">Minha Lista de Livros</h3>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="{% url 'search' %}" class="btn btn-secondary btn-sm">
+      &larr; Voltar à busca
+    </a>
+
+    <h3 class="mb-0 text-center flex-grow-1">Minha Lista de Livros</h3>
+
+    <form method="get" class="ml-2">
+      <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
+        <option value="">Todos os status</option>
+        <option value="plan" {% if status_selected == "plan" %}selected{% endif %}>Planejo ler</option>
+        <option value="reading" {% if status_selected == "reading" %}selected{% endif %}>Lendo</option>
+        <option value="completed" {% if status_selected == "completed" %}selected{% endif %}>Completo</option>
+        <option value="dropped" {% if status_selected == "plan" %}selected{% endif %}>Abandonado</option>
+      </select>
+    </form>
+  </div>
 
   {% if books %}
   <div class="row">
@@ -34,14 +50,30 @@
           <p class="card-text">
             <strong>Status:</strong> {{ userbook.get_status_display }}
           </p>
-          <p class="card-text mt-2">
-            <form method="post" action="{% url 'remove_book' userbook.id %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger btn-sm">
-                    <i class="fas fa-trash-alt"></i> Remover
+          <!-- Form editar status -->
+          <form method="post" action="{% url 'update_status' userbook.id %}" class="mb-2">
+            {% csrf_token %}
+            <div class="input-group">
+              <select name="status" class="form-control form-control-sm">
+                {% for key, value in userbook.STATUS_CHOICES %}
+                  <option value="{{ key }}" {% if userbook.status == key %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+              </select>
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-primary btn-sm">
+                  Editar
                 </button>
-            </form>
-        </p>
+              </div>
+            </div>
+          </form>
+
+          <!-- Form remover -->
+          <form method="post" action="{% url 'remove_book' userbook.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm btn-block">
+            Remover
+            </button>
+          </form>
         </div>
       </div>
     </div>
