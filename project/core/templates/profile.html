@@ -34,6 +34,14 @@
           <p class="card-text">
             <strong>Status:</strong> {{ userbook.get_status_display }}
           </p>
+          <p class="card-text mt-2">
+            <form method="post" action="{% url 'remove_book' userbook.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash-alt"></i> Remover
+                </button>
+            </form>
+        </p>
         </div>
       </div>
     </div>

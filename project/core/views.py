@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 import requests, math
 from django.urls import reverse_lazy
 from .models import CustomUser, UserBook, Book
+from django.shortcuts import redirect, get_object_or_404
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -124,3 +125,10 @@ class AddBookToListView(LoginRequiredMixin, View):
         )
 
         return redirect(request.META.get("HTTP_REFERER", "home"))
+    
+    
+class RemoveBookFromListView(LoginRequiredMixin, View):
+    def post(self, request, userbook_id, *args, **kwargs):
+        userbook = get_object_or_404(UserBook, id=userbook_id, user=request.user)
+        userbook.delete()
+        return redirect(request.META.get("HTTP_REFERER", "profile"))
