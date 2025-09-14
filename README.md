@@ -54,6 +54,7 @@ Este projeto é um **gerenciador de livros online** chamado **Bookly**, que perm
     cd wsBackend-Fabrica25.2
     
     ```
+
     
 2.  **Crie e ative um ambiente virtual:**
     
@@ -99,22 +100,29 @@ Este projeto é um **gerenciador de livros online** chamado **Bookly**, que perm
     }
     
     ```
+
+5.  **Entre no diretório do projeto:**
     
-5.  **Execute as migrations:**
+    ```bash
+    cd project
+    
+    ```
+    
+6.  **Execute as migrations:**
     
     ```bash
     python manage.py migrate
     
     ```
     
-6.  **Crie um superusuário (opcional):**
+7.  **Crie um superusuário (opcional):**
     
     ```bash
     python manage.py createsuperuser
     
     ```
     
-7.  **Execute a aplicação:**
+8.  **Execute a aplicação:**
     
     ```bash
     python manage.py runserver
