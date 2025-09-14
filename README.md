@@ -50,7 +50,7 @@ Este projeto é um **gerenciador de livros online** chamado **Bookly**, que perm
 1.  **Clone o repositório:**
     
     ```bash
-    git clone https://github.com/pedrohmadruga/wsBackend-Fabrica25.2
+    git clone https://github.com/pedrohmadruga/wsBackend-Fabrica25.2.git
     cd wsBackend-Fabrica25.2
     
     ```
